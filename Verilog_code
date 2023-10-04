@@ -1,45 +1,27 @@
-`timescale 1ns/1ps
+module pwm(
+    input wire clk,         // Clock input from FPGA clock source
+    input wire rst,         // Reset input
+    input wire [7:0] duty_cycle, // Duty cycle input (0-255)
+    output wire pwm_out     // PWM output
+);
 
-module testbench;
+reg [7:0] counter = 0;     // Counter to compare with duty cycle
+reg pwm_internal;         // Internal PWM signal
 
-    reg clk = 0;             // Clock signal
-    reg rst = 0;             // Reset signal
-    reg [7:0] duty_cycle = 8'b11011010; // Initial duty cycle (Change as needed)
-    wire pwm_out;            // PWM output
-    
-    // Instantiate the PWM module
-    pwm pwm_inst (
-        .clk(clk),
-        .rst(rst),
-        .duty_cycle(duty_cycle),
-        .pwm_out(pwm_out)
-    );
-    
-    // Clock generation
-    always begin
-        #5 clk = ~clk; // Toggle the clock every 5 time units
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        counter <= 0;      // Reset the counter
+        pwm_internal <= 0; // Reset the PWM signal
+    end else begin
+        counter <= counter + 1; // Increment the counter on each clock cycle
+        if (counter < duty_cycle) begin
+            pwm_internal <= 1; // PWM signal is high when counter < duty cycle
+        end else begin
+            pwm_internal <= 0; // PWM signal is low when counter >= duty cycle
+        end
     end
-    
-    // Reset generation
-    initial begin
-        rst = 1;      // Assert reset
-        #10 rst = 0;  // Release reset after 10 time units
-        #100 $finish; // Finish the simulation after 100 time units
-    end
-    
-    // Stimulus generation
-    initial begin
-        // Apply various duty cycles for testing
-        #20 duty_cycle = 8'b00000001;
-        #20 duty_cycle = 8'b00001111;
-        #20 duty_cycle = 8'b11110000;
-        #20 duty_cycle = 8'b01010101;
-        #20 duty_cycle = 8'b10101010;
-    end
-    
-    // Display PWM output
-    always @(posedge clk) begin
-        $display("Time = %0t, Duty Cycle = %h, PWM Output = %b", $time, duty_cycle, pwm_out);
-    end
+end
+
+assign pwm_out = pwm_internal;
 
 endmodule
