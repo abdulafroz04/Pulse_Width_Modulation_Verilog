@@ -1,0 +1,45 @@
+`timescale 1ns/1ps
+
+module testbench;
+
+    reg clk = 0;             // Clock signal
+    reg rst = 0;             // Reset signal
+    reg [7:0] duty_cycle = 8'b11011010; // Initial duty cycle (Change as needed)
+    wire pwm_out;            // PWM output
+    
+    // Instantiate the PWM module
+    pwm pwm_inst (
+        .clk(clk),
+        .rst(rst),
+        .duty_cycle(duty_cycle),
+        .pwm_out(pwm_out)
+    );
+    
+    // Clock generation
+    always begin
+        #5 clk = ~clk; // Toggle the clock every 5 time units
+    end
+    
+    // Reset generation
+    initial begin
+        rst = 1;      // Assert reset
+        #10 rst = 0;  // Release reset after 10 time units
+        #100 $finish; // Finish the simulation after 100 time units
+    end
+    
+    // Stimulus generation
+    initial begin
+        // Apply various duty cycles for testing
+        #20 duty_cycle = 8'b00000001;
+        #20 duty_cycle = 8'b00001111;
+        #20 duty_cycle = 8'b11110000;
+        #20 duty_cycle = 8'b01010101;
+        #20 duty_cycle = 8'b10101010;
+    end
+    
+    // Display PWM output
+    always @(posedge clk) begin
+        $display("Time = %0t, Duty Cycle = %h, PWM Output = %b", $time, duty_cycle, pwm_out);
+    end
+
+endmodule
