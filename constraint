@@ -1,0 +1,27 @@
+# Clock signal
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+set_property PACKAGE_PIN Y9 [get_ports clk] ;# Modify to the correct package pin
+
+# Reset signal
+set_property IOSTANDARD LVCMOS33 [get_ports rst]
+# Specify the location constraint for rst
+set_property LOC P16 [get_ports rst]
+
+# Duty cycle input
+# Specify the I/O standard for duty_cycle
+set_property IOSTANDARD LVCMOS33 [get_ports duty_cycle]
+set_property LOC F22 [get_ports {duty_cycle[0]}]
+set_property LOC G22 [get_ports {duty_cycle[1]}]
+set_property LOC H22 [get_ports {duty_cycle[2]}]
+set_property LOC F21 [get_ports {duty_cycle[3]}]
+set_property LOC H19 [get_ports {duty_cycle[4]}]
+set_property LOC H18 [get_ports {duty_cycle[5]}]
+set_property LOC H17 [get_ports {duty_cycle[6]}]
+set_property LOC M15 [get_ports {duty_cycle[7]}] ;# Modify to the correct package pin
+
+
+# PWM output
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_out]
+set_property PACKAGE_PIN V22 [get_ports pwm_out] ;# Modify to the correct package pin
+
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_IBUF]
